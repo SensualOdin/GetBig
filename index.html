@@ -27,6 +27,7 @@ body{
   min-height:100vh;min-height:100dvh;overflow-x:hidden;line-height:1.5;
   padding-bottom:calc(72px + var(--safe-bottom));
   -webkit-tap-highlight-color:transparent;
+  overscroll-behavior-y:contain;-webkit-overflow-scrolling:touch;
 }
 input,select,button,textarea{font-family:inherit;-webkit-appearance:none;appearance:none}
 input[type="number"]{-moz-appearance:textfield}
@@ -36,7 +37,7 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
 
 /* APP SHELL */
-.app{max-width:600px;margin:0 auto;padding:calc(12px + var(--safe-top)) 14px 24px}
+.app{max-width:600px;margin:0 auto;padding:12px 14px 24px}
 
 /* HEADER */
 .header{display:flex;align-items:center;padding:8px 0 14px;position:sticky;top:0;z-index:50;background:var(--bg);padding-top:calc(8px + var(--safe-top))}
@@ -137,7 +138,7 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 /* EXERCISE BLOCKS */
 .exercise-block{
   background:var(--bg3);border-radius:var(--radius);padding:14px;
-  border-left:4px solid var(--text3);margin-bottom:10px;
+  border-left:4px solid var(--text3);margin-bottom:10px;overflow:hidden;
 }
 .exercise-block.squat{border-left-color:var(--squat)}
 .exercise-block.bench{border-left-color:var(--bench)}
@@ -153,11 +154,11 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 
 /* SET ROWS */
 .set-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
-.set-label{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text3);width:28px;flex-shrink:0}
+.set-label{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text3);width:24px;flex-shrink:0}
 .set-input{
   background:var(--bg2);border:1px solid rgba(255,255,255,0.06);border-radius:8px;
-  padding:10px 6px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.88rem;
-  width:68px;text-align:center;outline:none;transition:border-color 0.2s;min-height:44px;
+  padding:10px 4px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:0.88rem;
+  flex:1;min-width:0;text-align:center;outline:none;transition:border-color 0.2s;min-height:44px;
 }
 .set-input:focus{border-color:var(--accent);background:var(--bg3)}
 .set-x{color:var(--text3);font-size:0.75rem;flex-shrink:0}
@@ -209,7 +210,7 @@ canvas{width:100%!important;height:100%!important}
 .meal-macros{font-family:'JetBrains Mono',monospace;font-size:0.7rem;color:var(--text2)}
 
 /* GUIDE */
-.program-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:12px}
+.program-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-bottom:12px;table-layout:fixed}
 .program-table th{text-align:left;padding:8px 6px;color:var(--text2);font-size:0.65rem;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--bg4)}
 .program-table td{padding:8px 6px;border-bottom:1px solid rgba(255,255,255,0.03);font-size:0.82rem}
 .program-table .col-label{color:var(--text2);font-weight:500}
@@ -266,7 +267,6 @@ canvas{width:100%!important;height:100%!important}
   .modal-overlay{align-items:center;padding:16px}
   .modal{border-radius:var(--radius);padding-bottom:24px}
   .chart-container{height:280px}
-  .set-input{width:76px}
 }
 </style>
 </head>
@@ -501,7 +501,7 @@ function renderWorkout(){
     const isP=idx===0,isA=idx===2,tag=isP?'PRIMARY':isA?'ACCESSORY':'SECONDARY';
     const block=document.createElement('div');block.className=`exercise-block ${ex.type}`;
     let sh='';
-    for(let i=0;i<ex.sets;i++){sh+=`<div class="set-row"><span class="set-label">S${i+1}</span><input class="set-input" type="number" inputmode="numeric" value="${ex.weight||''}" placeholder="lbs" data-ex="${ex.name}" data-set="${i}" data-field="weight"><span class="set-x">×</span><input class="set-input" type="${isA?'text':'number'}" inputmode="${isA?'text':'numeric'}" value="${ex.reps}" placeholder="reps" data-ex="${ex.name}" data-set="${i}" data-field="reps" style="width:56px"><button class="set-check" onclick="this.classList.toggle('done')"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button></div>`}
+    for(let i=0;i<ex.sets;i++){sh+=`<div class="set-row"><span class="set-label">S${i+1}</span><input class="set-input" type="number" inputmode="numeric" value="${ex.weight||''}" placeholder="lbs" data-ex="${ex.name}" data-set="${i}" data-field="weight"><span class="set-x">×</span><input class="set-input" type="${isA?'text':'number'}" inputmode="${isA?'text':'numeric'}" value="${ex.reps}" placeholder="reps" data-ex="${ex.name}" data-set="${i}" data-field="reps"><button class="set-check" onclick="this.classList.toggle('done')"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></button></div>`}
     block.innerHTML=`<div class="ex-header"><span class="ex-name">${ex.name}</span><span class="ex-tag ${isA?'acc-tag':''}">${tag}</span></div><div class="ex-rx">${ex.sets} × ${ex.reps}${ex.weight?' @ '+ex.weight+' lbs':''}</div>${sh}`;
     c.appendChild(block);
   });
